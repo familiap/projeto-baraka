@@ -1,0 +1,572 @@
+<title>Projeto Baraka</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout concept: a long-scroll editorial story, cream & deep-green bands separated by a thin
+   zellige-inspired line pattern, with the family's own photographs as the emotional anchors. */
+:root{
+  --bg:#f6f0e3; --surface:#fbf7ec; --surface-2:#ece0c5;
+  --fg:#241f1a; --muted:#6d6250;
+  --primary:#1f4a3a; --accent:#9c8249; --accent-ink:#6e5a30;
+  --border:#e3d4ab;
+  /* dark "band" sections stay a constant deep green regardless of light/dark theme,
+     so their cream text never inverts into dark-on-dark. gold is now a rare accent,
+     not a repeated label color, so the page reads calmer and greener overall. */
+  --band:#13211b; --band-fg:#f4eddc; --band-muted:#cabd9d;
+  --band-accent:#b79a63; --band-primary-soft:#b7dcc5;
+  --font-display:'Cormorant Garamond', Georgia, serif;
+  --font-arabic:'Amiri', 'Cormorant Garamond', serif;
+  --font-body:'Inter', -apple-system, system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121a16; --surface:#1a2420; --surface-2:#202b24;
+    --fg:#ece4d2; --muted:#a89c86;
+    --primary:#8fc1a7; --accent:#bb9d64; --accent-ink:#d3b87f;
+    --border:#2b3a31;
+    --band:#0b130f; --band-fg:#f4eddc; --band-muted:#cabd9d;
+    --band-accent:#b79a63; --band-primary-soft:#b7dcc5;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121a16; --surface:#1a2420; --surface-2:#202b24;
+  --fg:#ece4d2; --muted:#a89c86;
+  --primary:#8fc1a7; --accent:#bb9d64; --accent-ink:#d3b87f;
+  --border:#2b3a31;
+  --band:#0b130f; --band-fg:#f4eddc; --band-muted:#cabd9d;
+  --band-accent:#b79a63; --band-primary-soft:#b7dcc5;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--fg);
+  font-family:var(--font-body);
+  line-height:1.6;
+  padding-left:max(16px, env(safe-area-inset-left,0px));
+  padding-right:max(16px, env(safe-area-inset-right,0px));
+}
+img{max-width:100%; display:block}
+h1,h2,h3{font-family:var(--font-display); font-weight:600; text-wrap:balance; margin:0; color:var(--fg)}
+p{margin:0}
+.shell{max-width:1120px; margin:0 auto}
+.wrap{padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px))}
+.eyebrow{
+  font-family:var(--font-body); font-weight:700; font-size:.72rem; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--primary);
+}
+section{position:relative}
+.band{ margin-left:calc(-1 * max(16px, env(safe-area-inset-left,0px))); margin-right:calc(-1 * max(16px, env(safe-area-inset-right,0px))); }
+.band-inner{ padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px)); }
+
+/* zellige divider */
+.divider{ height:14px; background:
+  repeating-linear-gradient(135deg, var(--accent) 0 2px, transparent 2px 10px),
+  repeating-linear-gradient(45deg, var(--accent) 0 2px, transparent 2px 10px);
+  opacity:.55;
+}
+
+/* ---------- header ---------- */
+header.nav{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:50;
+  background:color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.nav-row{ display:flex; align-items:center; justify-content:space-between; gap:1rem; padding-block:.8rem; }
+.brand{ display:flex; align-items:center; gap:.5rem; font-family:var(--font-display); font-weight:600; font-size:1.2rem; }
+.brand .ar{ font-family:var(--font-arabic); color:var(--primary); font-size:1.3rem; }
+.nav-links{ display:flex; gap:1.6rem; list-style:none; margin:0; padding:0; font-size:.92rem; }
+.nav-links a{ color:var(--muted); text-decoration:none; }
+.nav-links a:hover{ color:var(--primary) }
+@media (max-width:760px){ .nav-links{ display:none } }
+.btn{
+  display:inline-flex; align-items:center; gap:.4rem; border-radius:999px; padding:.65rem 1.3rem;
+  font-weight:600; font-size:.88rem; text-decoration:none; cursor:pointer; border:1px solid transparent;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.btn:hover{ transform:translateY(-1px) }
+.btn-primary{ background:var(--primary); color:var(--surface); box-shadow:0 6px 18px -8px color-mix(in srgb, var(--primary) 70%, transparent); }
+.btn-ghost{ background:transparent; border-color:var(--border); color:var(--fg); }
+.btn-ghost:hover{ border-color:var(--accent); color:var(--accent-ink) }
+
+/* ---------- hero ---------- */
+.hero{ position:relative; isolation:isolate; color:var(--band-fg); }
+.hero-bg{ position:absolute; inset:0; z-index:-1; }
+.hero-bg img{ width:100%; height:100%; object-fit:cover; }
+.hero-bg::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, color-mix(in srgb, var(--band) 30%, transparent) 0%, color-mix(in srgb, var(--band) 60%, transparent) 65%, color-mix(in srgb, var(--band) 90%, transparent) 100%); }
+.hero-inner{ padding-block:5.5rem 3rem; min-height:min(640px, 82vh); display:flex; flex-direction:column; justify-content:flex-end; gap:1.4rem; }
+.hero-eyebrow{ color:var(--band-accent); }
+.hero h1{ font-size:clamp(2.6rem, 6vw, 4.4rem); line-height:1.02; color:var(--band-fg); }
+.hero h1 em{ font-style:normal; color:var(--band-accent); }
+.hero-sub{ max-width:46ch; font-size:1.1rem; color:var(--band-fg); }
+.hero-cta{ display:flex; flex-wrap:wrap; gap:.8rem; margin-top:.4rem; }
+.hero-cta .btn-ghost{ border-color:color-mix(in srgb, var(--band-fg) 45%, transparent); color:var(--band-fg); }
+.hero-cta .btn-ghost:hover{ border-color:var(--band-accent); color:var(--band-accent); }
+
+/* ---------- generic section spacing ---------- */
+.section{ padding-block:4.5rem; }
+.section-head{ max-width:62ch; margin-bottom:2.6rem; display:flex; flex-direction:column; gap:.6rem; }
+.section-head h2{ font-size:clamp(1.9rem, 3.4vw, 2.6rem); }
+.on-dark{ background:var(--band); color:var(--band-fg); }
+.on-dark h2, .on-dark h3{ color:var(--band-fg); }
+.on-dark .eyebrow{ color:var(--band-primary-soft); }
+.on-dark .muted{ color:var(--band-muted); }
+/* cards that keep a light surface inside a dark band need their own light-on-light palette,
+   not the band's cream-on-dark text color */
+.on-dark .way, .on-dark .baraka-box{ color:var(--fg); }
+.on-dark .way h3{ color:var(--fg); }
+.on-dark .way .muted{ color:var(--muted); }
+.muted{ color:var(--muted); }
+
+/* ---------- objetivo ---------- */
+.objetivo{ display:flex; gap:2rem; align-items:center; flex-wrap:wrap; }
+.objetivo blockquote{ font-family:var(--font-display); font-style:italic; font-size:clamp(1.5rem,3vw,2.1rem); flex:1 1 420px; margin:0; line-height:1.3; }
+.objetivo .mark{ font-size:3rem; font-family:var(--font-arabic); color:var(--accent); line-height:1; }
+
+/* ---------- familia ---------- */
+.familia-grid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:2.4rem; }
+@media (max-width:760px){ .familia-grid{ grid-template-columns:1fr; } }
+.person-card{ background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:1.8rem; display:flex; flex-direction:column; gap:1rem; }
+.person-photo{ width:100%; aspect-ratio:4/3; border-radius:14px; overflow:hidden; background:var(--surface-2); }
+.person-photo img{ width:100%; height:100%; object-fit:contain; }
+.person-card h3{ font-size:1.5rem; }
+.person-age{ color:var(--primary); font-weight:600; font-size:.85rem; }
+.tag-row{ display:flex; flex-wrap:wrap; gap:.4rem; }
+.tag{ font-size:.74rem; font-weight:600; letter-spacing:.02em; padding:.3rem .65rem; border-radius:999px; background:var(--surface-2); color:var(--muted); border:1px solid var(--border); }
+.isabel{ margin-top:2.2rem; display:flex; gap:1.2rem; align-items:flex-start; background:var(--surface-2); border-radius:18px; padding:1.4rem 1.6rem; }
+.isabel .mark{ font-family:var(--font-arabic); color:var(--accent); font-size:1.6rem; }
+
+/* ---------- chamado (quotes) ---------- */
+.quotes{ display:grid; grid-template-columns:repeat(2,1fr); gap:1.8rem; }
+@media (max-width:760px){ .quotes{ grid-template-columns:1fr; } }
+.quote-card{ background:color-mix(in srgb, var(--band-fg) 6%, transparent); border:1px solid color-mix(in srgb, var(--band-fg) 14%, transparent); border-radius:18px; padding:1.6rem; }
+.on-dark .quote-card{ color:var(--band-fg); }
+.quote-card .who{ font-weight:700; color:var(--band-primary-soft); margin-bottom:.6rem; font-family:var(--font-body); font-size:.85rem; letter-spacing:.06em; text-transform:uppercase; }
+.quote-card p{ font-family:var(--font-display); font-style:italic; font-size:1.08rem; }
+.historia-photo{ border-radius:18px; overflow:hidden; }
+.historia-row{ display:grid; grid-template-columns:1.1fr 1fr; gap:2.4rem; align-items:center; margin-top:2.6rem; }
+@media (max-width:760px){ .historia-row{ grid-template-columns:1fr; } }
+
+/* ---------- stats (por que marrocos) ---------- */
+.stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:1.2rem; margin-bottom:2.6rem; }
+@media (max-width:860px){ .stat-grid{ grid-template-columns:repeat(2,1fr); } }
+.stat{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:1.3rem 1.1rem; }
+.stat .num{ font-family:var(--font-display); font-size:2.2rem; font-weight:600; color:var(--primary); font-variant-numeric:tabular-nums; }
+.stat .lbl{ font-size:.8rem; color:var(--muted); margin-top:.25rem; }
+.two-col{ display:grid; grid-template-columns:1fr 1fr; gap:2.4rem; }
+@media (max-width:760px){ .two-col{ grid-template-columns:1fr; } }
+.panel{ background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:1.8rem; }
+.panel h3{ font-size:1.25rem; margin-bottom:.7rem; }
+
+/* ---------- tanger ---------- */
+.tanger-row{ display:grid; grid-template-columns:1fr 1fr; gap:2.4rem; align-items:center; }
+@media (max-width:760px){ .tanger-row{ grid-template-columns:1fr; } }
+.tanger-photo{ border-radius:18px; overflow:hidden; }
+.tanger-photo img{ aspect-ratio:4/3; object-fit:cover; width:100%; height:100%; }
+.base-card{ margin-top:1.8rem; background:var(--surface-2); border-radius:16px; padding:1.3rem 1.5rem; display:flex; gap:1rem; align-items:flex-start; }
+
+/* ---------- mvv ---------- */
+.mvv-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.6rem; }
+@media (max-width:860px){ .mvv-grid{ grid-template-columns:1fr; } }
+.mvv-card{ border-radius:18px; padding:1.8rem; background:color-mix(in srgb, var(--band-fg) 7%, transparent); border:1px solid color-mix(in srgb, var(--band-fg) 16%, transparent); }
+.mvv-card .ico{ font-family:var(--font-arabic); font-size:1.8rem; color:var(--band-primary-soft); margin-bottom:.8rem; }
+.mvv-card h3{ color:var(--band-fg); font-size:1.3rem; margin-bottom:.6rem; }
+.mvv-card p{ color:var(--band-muted); font-size:.95rem; }
+
+/* ---------- estrategia ---------- */
+.strategy-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.6rem; margin-top:2rem; }
+@media (max-width:860px){ .strategy-grid{ grid-template-columns:1fr; } }
+.strategy-card{ background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:1.6rem; display:flex; flex-direction:column; gap:.7rem; }
+.strategy-card .num{ font-family:var(--font-display); font-size:1.1rem; color:var(--primary); font-weight:600; }
+.strategy-foot{ margin-top:2.2rem; text-align:center; font-family:var(--font-display); font-style:italic; font-size:1.2rem; color:var(--primary); }
+
+/* ---------- agencia ---------- */
+.agency-grid{ display:grid; grid-template-columns:1fr 1fr; gap:2rem; }
+@media (max-width:760px){ .agency-grid{ grid-template-columns:1fr; } }
+.panel-logo{ height:40px; margin-bottom:1.2rem; display:flex; align-items:center; }
+.panel-logo img{ height:100%; width:auto; }
+.panel-logo-square{ height:56px; width:56px; border-radius:12px; overflow:hidden; }
+.panel-logo-square img{ height:100%; width:100%; object-fit:cover; }
+
+/* ---------- cronograma ---------- */
+.timeline{ display:flex; flex-direction:column; gap:0; border-left:2px solid var(--border); margin-left:.5rem; }
+.tl-item{ position:relative; padding:0 0 2.2rem 1.8rem; }
+.tl-item:last-child{ padding-bottom:0; }
+.tl-item::before{ content:attr(data-n); position:absolute; left:-1.01rem; top:0; width:2rem; height:2rem; border-radius:50%;
+  background:var(--primary); color:var(--surface); font-size:.8rem; font-weight:700; display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-body); }
+.tl-when{ font-weight:700; color:var(--band-primary-soft); font-size:.85rem; letter-spacing:.04em; text-transform:uppercase; }
+.tl-desc{ margin-top:.3rem; max-width:58ch; }
+
+/* ---------- orcamento ---------- */
+.budget{ background:var(--surface); border:1px solid var(--border); border-radius:18px; overflow:hidden; }
+.budget-row{ display:flex; justify-content:space-between; gap:1rem; padding:.85rem 1.4rem; border-bottom:1px solid var(--border); font-size:.95rem; }
+.budget-row:last-of-type{ border-bottom:none; }
+.budget-row .val{ font-variant-numeric:tabular-nums; font-weight:600; white-space:nowrap; }
+.budget-total{ background:var(--primary); color:var(--surface); display:flex; justify-content:space-between; padding:1.1rem 1.4rem; font-weight:700; font-size:1.15rem; }
+.budget-total .val{ font-variant-numeric:tabular-nums; }
+.budget-note{ font-size:.8rem; color:var(--muted); margin-top:.8rem; }
+
+/* ---------- participe ---------- */
+.ways{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.4rem; margin-top:2.4rem; }
+@media (max-width:860px){ .ways{ grid-template-columns:1fr; } }
+.way{ background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:1.6rem; }
+.way .num{ font-family:var(--font-display); font-size:1.6rem; color:var(--primary); font-weight:600; }
+.verse{ font-family:var(--font-display); font-style:italic; font-size:1.3rem; max-width:52ch; color:var(--band-primary-soft); margin-bottom:.6rem; }
+.baraka-box{ margin-top:2.6rem; display:flex; gap:1.4rem; align-items:center; background:var(--surface-2); border-radius:18px; padding:1.6rem 1.8rem; }
+.baraka-box .ar{ font-family:var(--font-arabic); font-size:2.6rem; color:var(--primary); line-height:1; }
+
+/* ---------- contato / footer ---------- */
+footer{ padding-block:3.5rem; }
+.contact-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:1.6rem; margin-top:2rem; }
+@media (max-width:760px){ .contact-grid{ grid-template-columns:1fr; } }
+.contact-item{ display:flex; justify-content:space-between; align-items:center; gap:1rem; background:color-mix(in srgb, var(--band-fg) 7%, transparent); border:1px solid color-mix(in srgb, var(--band-fg) 16%, transparent); border-radius:14px; padding:1rem 1.2rem; }
+.contact-item .lbl{ font-size:.75rem; text-transform:uppercase; letter-spacing:.08em; color:var(--band-muted); display:block; margin-bottom:.2rem; }
+.contact-item .v{ font-weight:600; word-break:break-word; }
+.copy-btn{ flex:0 0 auto; background:transparent; border:1px solid color-mix(in srgb, var(--band-fg) 35%, transparent); color:var(--band-fg); border-radius:8px; padding:.4rem .7rem; font-size:.78rem; cursor:pointer; font-family:var(--font-body); }
+.copy-btn:hover{ border-color:var(--band-accent); color:var(--band-accent); }
+.foot-note{ margin-top:2.6rem; max-width:62ch; color:var(--band-muted); font-size:.95rem; }
+.foot-bottom{ margin-top:2.6rem; padding-top:1.6rem; border-top:1px solid color-mix(in srgb, var(--band-fg) 14%, transparent); display:flex; justify-content:space-between; flex-wrap:wrap; gap:.6rem; font-size:.82rem; color:var(--band-muted); }
+
+.reveal{ opacity:0; transform:translateY(14px); transition:opacity .6s ease, transform .6s ease; }
+.reveal.in{ opacity:1; transform:none; }
+@media (prefers-reduced-motion: reduce){ .reveal{ opacity:1; transform:none; transition:none; } }
+</style>
+
+<header class="nav">
+  <div class="shell wrap nav-row">
+    <div class="brand"><span class="ar">بركة</span> Projeto Baraka</div>
+    <ul class="nav-links">
+      <li><a href="#familia">Família</a></li>
+      <li><a href="#marrocos">Marrocos</a></li>
+      <li><a href="#missao">Missão</a></li>
+      <li><a href="#cronograma">Cronograma</a></li>
+      <li><a href="#participe">Participe</a></li>
+    </ul>
+    <a class="btn btn-primary" href="#contato">Falar com a gente</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-bg"><img src="images/hero.jpg" alt="Família Pacheco diante do horizonte de Tânger, Marrocos" width="1672" height="941"></div>
+  <div class="shell wrap hero-inner">
+    <p class="eyebrow hero-eyebrow">Plantação de igreja em Tânger, Marrocos</p>
+    <h1>Uma família,<br><em>um chamado</em>,<br>um povo a alcançar.</h1>
+    <p class="hero-sub">Igor, Shalom e Isabel Pacheco estão se preparando para viver em Tânger e, em parceria com uma igreja e uma agência missionária, plantar uma igreja entre o povo marroquino.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#participe">Faça parte disso</a>
+      <a class="btn btn-ghost" href="#contato">Entrar em contato</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section reveal" id="objetivo">
+  <div class="shell wrap objetivo">
+    <span class="mark">٭</span>
+    <blockquote>Estabelecer parcerias que tornem viável a plantação de igreja na cidade de Tânger, no Marrocos.</blockquote>
+  </div>
+</section>
+
+<section class="section reveal" id="familia">
+  <div class="shell wrap">
+    <div class="section-head">
+      <p class="eyebrow">Quem vai</p>
+      <h2>A família missionária</h2>
+      <p class="muted">Igor e Shalom se conheceram estudando missões em 2019. Hoje, como família, se preparam para viver entre os marroquinos e anunciar Cristo em Tânger.</p>
+    </div>
+    <div class="familia-grid">
+      <article class="person-card">
+        <div class="person-photo"><img src="images/family-oval.png" alt="Igor, Shalom e Isabel Pacheco" loading="lazy"></div>
+        <span class="person-age">Igor Pacheco de Sousa · 30 anos</span>
+        <h3>Advogado, treinador e futuro plantador de igrejas</h3>
+        <p class="muted">Natural de São Paulo, é Bacharel em Teologia e treinador de futebol com licença C pela CBF Academy. Fala inglês avançado, francês e espanhol básicos, e já iniciou seus estudos em árabe marroquino. Passou por formações como o CTPI, a Jocum SP, o Programa RADICAL (Junta de Missões Nacionais–CBB) e a Academia Anajure, além de mentorias em missão e antropologia missionária.</p>
+        <div class="tag-row">
+          <span class="tag">Teologia</span><span class="tag">Direito</span><span class="tag">Futebol CBF</span><span class="tag">Árabe marroquino</span>
+        </div>
+      </article>
+      <article class="person-card">
+        <div class="person-photo"><img src="images/family-morocco.png" alt="Shalom, Igor e Isabel Pacheco vestidos com trajes marroquinos" loading="lazy"></div>
+        <span class="person-age">Shalom Martins Pacheco · 29 anos</span>
+        <h3>Psicóloga, dedicada a quem o mundo esquece</h3>
+        <p class="muted">Natural de Ipatinga, é psicóloga especializada em atendimento a pessoas com TDAH, com inglês avançado e iniciando o árabe marroquino. Participou do Curso Perspectivas, da Frontiers, do Acampamento Underground (Portas Abertas) e de mentoria em missão intercultural, além de anos de trabalho com jovens na Mocidade Para Cristo.</p>
+        <div class="tag-row">
+          <span class="tag">Psicologia</span><span class="tag">TDAH</span><span class="tag">Discipulado jovem</span><span class="tag">Árabe marroquino</span>
+        </div>
+      </article>
+    </div>
+    <div class="isabel">
+      <span class="mark">❖</span>
+      <p><strong>Isabel Martins Pacheco</strong> nasceu em abril de 2026, em Ipatinga-MG — e fará parte, desde o berço, da missão que Deus confiou à sua família.</p>
+    </div>
+  </div>
+</section>
+
+<section class="on-dark section reveal">
+  <div class="shell wrap">
+    <div class="section-head">
+      <p class="eyebrow">Como tudo começou</p>
+      <h2>Nosso chamado e história</h2>
+    </div>
+    <div class="quotes">
+      <div class="quote-card">
+        <p class="who">Igor</p>
+        <p>"Aos 17 anos, orando por um casal muçulmano em Dublin, senti meu coração arder de um jeito diferente. Romanos 10:14 — 'Como ouvirão, se não há quem pregue?' — se tornou o texto-chave da minha vocação para servir este povo."</p>
+      </div>
+      <div class="quote-card">
+        <p class="who">Shalom</p>
+        <p>"Aos 10 anos, ao ver uma mulher muçulmana nas ruas de Ipatinga, senti meu coração queimar de um amor que não sabia explicar. Anos depois, ouvindo o testemunho de uma missionária entre mulheres muçulmanas, entendi: aquele amor era o chamado de Deus."</p>
+      </div>
+    </div>
+    <div class="historia-row">
+      <div>
+        <p style="margin-bottom:1rem">Nos conhecemos em Belo Horizonte, em 2019, durante um curso de missões da M3. Namoramos e noivamos à distância, e casamos em abril de 2023. No Vocare de 2024 conhecemos a Christar, e passamos a caminhar e orar com a agência rumo ao campo missionário.</p>
+        <p>Em 2025, fizemos uma viagem de reconhecimento pela Europa — e ali Deus falou claramente ao nosso coração sobre o povo marroquino. No mesmo período, Deus nos deu Isabel, nascida em abril de 2026, para nos acompanhar nesta jornada. Hoje, como família, estamos prontos para anunciar Cristo entre os muçulmanos no Marrocos.</p>
+      </div>
+      <div class="historia-photo"><img src="images/family-morocco.png" alt="Família Pacheco com trajes marroquinos" loading="lazy" style="background:var(--surface-2); padding:1rem"></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section reveal" id="marrocos">
+  <div class="shell wrap">
+    <div class="section-head">
+      <p class="eyebrow">O campo</p>
+      <h2>Por que Marrocos?</h2>
+      <p class="muted">Uma monarquia islâmica onde o evangelho ainda é praticamente desconhecido — mas onde uma geração inteira está começando a perguntar.</p>
+    </div>
+    <div class="stat-grid">
+      <div class="stat"><div class="num">37 mi</div><div class="lbl">habitantes</div></div>
+      <div class="stat"><div class="num">99%</div><div class="lbl">da população é muçulmana</div></div>
+      <div class="stat"><div class="num">0,1%</div><div class="lbl">se identifica como evangélico</div></div>
+      <div class="stat"><div class="num">25º</div><div class="lbl">país mais perseguido do mundo</div></div>
+    </div>
+    <div class="two-col">
+      <div class="panel">
+        <h3>Um risco real</h3>
+        <p class="muted">O Artigo 220 do Código Penal marroquino criminaliza qualquer tentativa de "abalar a fé de um muçulmano" — tornando conversas sobre fé potencialmente arriscadas. Cristãos de origem muçulmana enfrentam isolamento, demissão e pressão familiar intensa, e muitos vivem sua fé em segredo.</p>
+      </div>
+      <div class="panel">
+        <h3>Uma janela histórica</h3>
+        <p class="muted">Sede da Copa do Mundo de 2030, o Marrocos vive uma transição geracional: jovens questionam tradições e se abrem ao novo, em meio a uma liderança conhecida por seu diálogo intercultural. É um momento em que sementes plantadas com sabedoria, respeito e amor genuíno podem germinar em solo fértil.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section reveal">
+  <div class="shell wrap tanger-row">
+    <div>
+      <p class="eyebrow">A cidade</p>
+      <h2 style="margin-bottom:1rem">Por que Tânger?</h2>
+      <p class="muted" style="margin-bottom:1.2rem">Porta de entrada da África e centro cosmopolita onde culturas se encontram, Tânger é um ponto estratégico para a plantação de igrejas. Com cerca de 1 milhão de habitantes, é a maior cidade do norte do Marrocos e exerce influência regional sobre cidades vizinhas como Tetuão e Larache. Sua infraestrutura — escolas, hospitais, comércio e transporte — sustenta uma presença missionária de longo prazo.</p>
+      <div class="base-card">
+        <span class="mark" style="font-family:var(--font-arabic); color:var(--accent); font-size:1.6rem">◆</span>
+        <p><strong>Grupo base:</strong> Daniele, Maxy e sua filha Mariela serão o grupo base inicial, enviados pela mesma agência para pioneirar juntos o trabalho de plantação de igreja em Tânger — enquanto oram e se preparam para receber mais parceiros.</p>
+      </div>
+    </div>
+    <div class="tanger-photo"><img src="images/tanger.jpg" alt="Praça à beira-mar em Tânger com a bandeira do Marrocos" loading="lazy"></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="on-dark section reveal" id="missao">
+  <div class="shell wrap">
+    <div class="section-head">
+      <p class="eyebrow">O que nos guia</p>
+      <h2>Missão, visão e valores</h2>
+    </div>
+    <div class="mvv-grid">
+      <div class="mvv-card">
+        <div class="ico">﴾ ﴿</div>
+        <h3>Missão</h3>
+        <p>Glorificar a Deus proclamando o Evangelho de Jesus Cristo ao povo marroquino, por meio de relacionamentos autênticos e da demonstração prática do amor de Cristo.</p>
+      </div>
+      <div class="mvv-card">
+        <div class="ico">⊙</div>
+        <h3>Visão</h3>
+        <p>Ser uma presença cristã viva em Tânger que, por meio de relacionamentos autênticos, planta igrejas missionais capazes de transformar comunidades marroquinas e tornar Jesus conhecido entre povos não alcançados.</p>
+      </div>
+      <div class="mvv-card">
+        <div class="ico">✧</div>
+        <h3>Valores</h3>
+        <p>Pregar o evangelho bíblico com relevância cultural, por meio de relacionamentos baseados no respeito, no amor e no serviço.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section reveal">
+  <div class="shell wrap">
+    <div class="section-head">
+      <p class="eyebrow">Como vamos trabalhar</p>
+      <h2>Estratégia missional</h2>
+      <p class="muted">O aprendizado da língua é o foco inicial — base para comunicar o evangelho com excelência e profundidade. A partir daí, três frentes se somam ao ministério:</p>
+    </div>
+    <div class="strategy-grid">
+      <div class="strategy-card">
+        <span class="num">Futebol</span>
+        <p class="muted">Igor possui certificação CBF Academy e pretende empreender uma escolinha de futebol — porta de entrada natural para famílias marroquinas, construindo confiança com pais e um ambiente seguro para demonstrar o amor de Cristo às crianças.</p>
+      </div>
+      <div class="strategy-card">
+        <span class="num">Business as Mission</span>
+        <p class="muted">Uso estratégico das profissões de advocacia e psicologia para estabelecer atividade missional no campo. A credibilidade profissional abre portas para pessoas de influência, com foco em conexões discipuladoras e sustento.</p>
+      </div>
+      <div class="strategy-card">
+        <span class="num">Inserção missional</span>
+        <p class="muted">Culturalização integral — escolas, mercados e eventos locais — construindo amizades reais com vizinhos, para testemunhar uma vida coerente com a fé cristã, integrada ao contexto marroquino.</p>
+      </div>
+    </div>
+    <p class="strategy-foot">A finalidade de tudo é sempre o discipulado para a plantação de igreja.</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section reveal">
+  <div class="shell wrap">
+    <div class="section-head">
+      <p class="eyebrow">Quem caminha com a família</p>
+      <h2>Agência e igreja enviadora</h2>
+    </div>
+    <div class="agency-grid">
+      <div class="panel">
+        <div class="panel-logo"><img src="images/logo-christar.png" alt="Logo da Christar América Latina" loading="lazy"></div>
+        <h3>Christar</h3>
+        <p class="muted">Agência missionária com mais de 115 anos de história, hoje com cerca de 600 trabalhadores em mais de 30 países. Sua missão é plantar igrejas entre povos menos alcançados — budistas, hindus, muçulmanos e outros povos asiáticos. A Christar América Latina foi inaugurada no Brasil em 2025, é filiada à AMTB e liderada por Alexandre e Laísa Ribeiro, tratando a missão como identidade e modo de vida, não como um evento no calendário.</p>
+      </div>
+      <div class="panel">
+        <div class="panel-logo panel-logo-square"><img src="images/logo-leve.jpg" alt="Logo da Igreja Batista Leve" loading="lazy"></div>
+        <h3>Igreja Batista Leve</h3>
+        <p class="muted">Igreja em plantação na cidade de Ipatinga desde agosto de 2023, pastoreada por Felipe Roberto e Kíssila Tais. Faz parte do CTPI (Centro de Treinamento e Plantação de Igrejas) e da CBB (Convenção Batista Brasileira) — uma igreja de identidade missional, que comunica o evangelho na cultura contemporânea de forma bíblica, simples e leve.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="on-dark section reveal" id="cronograma">
+  <div class="shell wrap">
+    <div class="section-head">
+      <p class="eyebrow">O caminho até o envio</p>
+      <h2>Cronograma</h2>
+    </div>
+    <div class="timeline">
+      <div class="tl-item" data-n="1">
+        <div class="tl-when">Nov 2026</div>
+        <div class="tl-desc">Conclusão do Concílio Pastoral de Igor — Ordem de Pastores Batistas do Vale do Aço, MG.</div>
+      </div>
+      <div class="tl-item" data-n="2">
+        <div class="tl-when">Jul – Dez 2026</div>
+        <div class="tl-desc">Intensificação do estudo do árabe marroquino e dos estudos missiológicos/teológicos, com visitas a igrejas para consolidar parcerias.</div>
+      </div>
+      <div class="tl-item" data-n="3">
+        <div class="tl-when">Jan – Mar 2027</div>
+        <div class="tl-desc">Fechamento do sustento integral da família.</div>
+      </div>
+      <div class="tl-item" data-n="4">
+        <div class="tl-when">Abril 2027</div>
+        <div class="tl-desc">Culto de envio para Tânger, Marrocos — início da missão transcultural.</div>
+      </div>
+      <div class="tl-item" data-n="5">
+        <div class="tl-when">2027 – 2029</div>
+        <div class="tl-desc">Foco integral no estudo do árabe darija, adaptação cultural e construção de relacionamentos.</div>
+      </div>
+      <div class="tl-item" data-n="6">
+        <div class="tl-when">2029 em diante</div>
+        <div class="tl-desc">Início das estratégias missionárias: futebol, Business as Mission, inserção missional e plantação de igrejas.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="on-dark section reveal" id="participe">
+  <div class="shell wrap">
+    <div class="section-head">
+      <p class="eyebrow">Seu lugar nessa história</p>
+      <h2>Faça parte disso</h2>
+    </div>
+    <p class="verse">"Em nada tenho a minha vida por preciosa, contanto que cumpra com alegria a minha carreira, e o ministério que recebi do Senhor Jesus."</p>
+    <p class="muted">Atos 20:24</p>
+    <div class="ways">
+      <div class="way"><div class="num">01</div><h3>Orando</h3><p class="muted">Entre em contato e faça parte do nosso grupo de oração e da nossa lista de transmissão.</p></div>
+      <div class="way"><div class="num">02</div><h3>Contribuindo</h3><p class="muted">Seja um mantenedor mensal fiel, ajudando a sustentar a família durante o período no campo.</p></div>
+      <div class="way"><div class="num">03</div><h3>Mobilizando</h3><p class="muted">Ajude espalhando este projeto — na sua igreja, na sua rede de amigos e contatos.</p></div>
+    </div>
+    <div class="baraka-box">
+      <span class="ar">بركة</span>
+      <p><strong>Baraka</strong> quer dizer graça divina, bênção. Cremos que Deus prometeu uma grande bênção a Ismael e sua descendência (Gênesis 17:20 e 21:17-18) — e é com alegria que esta família deixa o Brasil para fazer parte daquilo que Deus está fazendo entre os marroquinos.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="on-dark" id="contato">
+  <div class="shell wrap">
+    <p class="eyebrow">Obrigado</p>
+    <h2 style="margin-top:.6rem">Vamos conversar sobre essa jornada</h2>
+    <p class="foot-note">Somos gratos a Deus por cada igreja e irmão que recebeu este projeto para análise. Será uma alegria enorme compartilhar mais sobre essa jornada e, se houver convergência entre o que Deus está fazendo no Projeto Baraka e em sua comunidade, construir juntos esse sonho. Estamos abertos para reuniões e agendas.</p>
+    <div class="contact-grid">
+      <div class="contact-item">
+        <div><span class="lbl">WhatsApp</span><span class="v">11 98999-6516</span></div>
+        <button class="copy-btn" data-copy="11989996516">Copiar</button>
+      </div>
+      <div class="contact-item">
+        <div><span class="lbl">E-mail</span><span class="v">projetomarrocos@outlook.com</span></div>
+        <button class="copy-btn" data-copy="projetomarrocos@outlook.com">Copiar</button>
+      </div>
+      <div class="contact-item">
+        <div><span class="lbl">Chave Pix (e-mail)</span><span class="v">projetomarrocos@outlook.com</span></div>
+        <button class="copy-btn" data-copy="projetomarrocos@outlook.com">Copiar</button>
+      </div>
+      <div class="contact-item">
+        <div><span class="lbl">Instagram</span><span class="v">@igorpachecopessoal · @shalom.psi</span></div>
+        <button class="copy-btn" data-copy="@igorpachecopessoal e @shalom.psi">Copiar</button>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>Projeto Baraka — Família Pacheco em Tânger, Marrocos</span>
+      <span>Christar · Igreja Batista Leve, Ipatinga-MG</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  try{
+    var els = document.querySelectorAll('.reveal');
+    if('IntersectionObserver' in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold: .12 });
+      els.forEach(function(el){ io.observe(el); });
+    } else {
+      els.forEach(function(el){ el.classList.add('in'); });
+    }
+  }catch(e){ document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); }); }
+
+  document.querySelectorAll('.copy-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var text = btn.getAttribute('data-copy');
+      var done = function(){ var old = btn.textContent; btn.textContent = 'Copiado!'; setTimeout(function(){ btn.textContent = old; }, 1600); };
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(done).catch(function(){
+          var r = document.createRange(); var sel = window.getSelection();
+          var span = document.createElement('span'); span.textContent = text;
+          document.body.appendChild(span); r.selectNode(span); sel.removeAllRanges(); sel.addRange(r);
+          try{ document.execCommand('copy'); }catch(err){}
+          sel.removeAllRanges(); document.body.removeChild(span); done();
+        });
+      }
+    });
+  });
+})();
+</script>
