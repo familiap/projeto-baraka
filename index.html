@@ -16,6 +16,7 @@
      not a repeated label color, so the page reads calmer and greener overall. */
   --band:#13211b; --band-fg:#f4eddc; --band-muted:#cabd9d;
   --band-accent:#b79a63; --band-primary-soft:#b7dcc5;
+  --danger:#a3432f;
   --font-display:'Cormorant Garamond', Georgia, serif;
   --font-arabic:'Amiri', 'Cormorant Garamond', serif;
   --font-body:'Inter', -apple-system, system-ui, sans-serif;
@@ -29,6 +30,7 @@
     --border:#2b3a31;
     --band:#0b130f; --band-fg:#f4eddc; --band-muted:#cabd9d;
     --band-accent:#b79a63; --band-primary-soft:#b7dcc5;
+    --danger:#e2836c;
     color-scheme: dark;
   }
 }
@@ -39,6 +41,7 @@
   --border:#2b3a31;
   --band:#0b130f; --band-fg:#f4eddc; --band-muted:#cabd9d;
   --band-accent:#b79a63; --band-primary-soft:#b7dcc5;
+  --danger:#e2836c;
   color-scheme: dark;
 }
 *{box-sizing:border-box}
@@ -214,8 +217,21 @@ header.nav{
 /* ---------- participe ---------- */
 .ways{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.4rem; margin-top:2.4rem; }
 @media (max-width:860px){ .ways{ grid-template-columns:1fr; } }
-.way{ background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:1.6rem; }
+.way{ background:var(--surface); border:1px solid var(--border); border-radius:18px; padding:1.6rem; display:flex; flex-direction:column; gap:.6rem; }
 .way .num{ font-family:var(--font-display); font-size:1.6rem; color:var(--primary); font-weight:600; }
+.way-action{ margin-top:.4rem; align-self:flex-start; }
+.mantenedor-form{ margin-top:.6rem; display:flex; flex-direction:column; gap:.9rem; }
+.mantenedor-form[hidden]{ display:none; }
+.field{ display:flex; flex-direction:column; gap:.3rem; }
+.field label{ font-size:.78rem; font-weight:600; color:var(--muted); }
+.field input, .field select, .field textarea{
+  font-family:var(--font-body); font-size:.92rem; padding:.6rem .7rem; border-radius:10px;
+  border:1px solid var(--border); background:var(--bg); color:var(--fg);
+}
+.field textarea{ resize:vertical; min-height:70px; }
+.form-msg{ font-size:.85rem; min-height:1.2em; }
+.form-msg.success{ color:var(--primary); font-weight:600; }
+.form-msg.error{ color:var(--danger); font-weight:600; }
 .verse{ font-family:var(--font-display); font-style:italic; font-size:1.3rem; max-width:52ch; color:var(--band-primary-soft); margin-bottom:.6rem; }
 .baraka-box{ margin-top:2.6rem; display:flex; gap:1.4rem; align-items:center; background:var(--surface-2); border-radius:18px; padding:1.6rem 1.8rem; }
 .baraka-box .ar{ font-family:var(--font-arabic); font-size:2.6rem; color:var(--primary); line-height:1; }
@@ -498,8 +514,49 @@ footer{ padding-block:3.5rem; }
     <p class="verse">"Em nada tenho a minha vida por preciosa, contanto que cumpra com alegria a minha carreira, e o ministério que recebi do Senhor Jesus."</p>
     <p class="muted">Atos 20:24</p>
     <div class="ways">
-      <div class="way"><div class="num">01</div><h3>Orando</h3><p class="muted">Entre em contato e faça parte do nosso grupo de oração e da nossa lista de transmissão.</p></div>
-      <div class="way"><div class="num">02</div><h3>Contribuindo</h3><p class="muted">Seja um mantenedor mensal fiel, ajudando a sustentar a família durante o período no campo.</p></div>
+      <div class="way">
+        <div class="num">01</div>
+        <h3>Orando</h3>
+        <p class="muted">Entre para o nosso grupo de oração e lista de transmissão no WhatsApp — é por lá que compartilhamos pedidos de oração e notícias do campo.</p>
+        <a class="btn btn-primary way-action" href="https://chat.whatsapp.com/GPDfwXxldPW1lmbBTrsgCJ?s=cl&amp;p=i&amp;mlu=4&amp;ilr=4&amp;iam=0" target="_blank" rel="noopener">Entrar no grupo do WhatsApp</a>
+      </div>
+      <div class="way">
+        <div class="num">02</div>
+        <h3>Contribuindo</h3>
+        <p class="muted">Seja um mantenedor mensal fiel, ajudando a sustentar a família durante o período no campo.</p>
+        <button class="btn btn-primary way-action" type="button" id="mantenedor-toggle" aria-expanded="false" aria-controls="mantenedor-form">Quero ser mantenedor</button>
+        <form class="mantenedor-form" id="mantenedor-form" hidden>
+          <div class="field">
+            <label for="m-nome">Nome completo</label>
+            <input id="m-nome" name="nome" type="text" required autocomplete="name">
+          </div>
+          <div class="field">
+            <label for="m-email">E-mail</label>
+            <input id="m-email" name="email" type="email" required autocomplete="email">
+          </div>
+          <div class="field">
+            <label for="m-whats">WhatsApp</label>
+            <input id="m-whats" name="whatsapp" type="tel" required autocomplete="tel" placeholder="DDD + número">
+          </div>
+          <div class="field">
+            <label for="m-valor">Contribuição mensal pretendida</label>
+            <select id="m-valor" name="contribuicao">
+              <option>Até R$ 50</option>
+              <option>R$ 50 a R$ 100</option>
+              <option>R$ 100 a R$ 200</option>
+              <option>Acima de R$ 200</option>
+              <option>Prefiro combinar</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="m-msg">Mensagem (opcional)</label>
+            <textarea id="m-msg" name="mensagem" rows="3"></textarea>
+          </div>
+          <input type="hidden" name="_subject" value="Novo mantenedor — Projeto Baraka">
+          <button class="btn btn-primary" type="submit">Enviar cadastro</button>
+          <p class="form-msg" id="mantenedor-msg" role="status" aria-live="polite"></p>
+        </form>
+      </div>
       <div class="way"><div class="num">03</div><h3>Mobilizando</h3><p class="muted">Ajude espalhando este projeto — na sua igreja, na sua rede de amigos e contatos.</p></div>
     </div>
     <div class="baraka-box">
@@ -552,6 +609,53 @@ footer{ padding-block:3.5rem; }
       els.forEach(function(el){ el.classList.add('in'); });
     }
   }catch(e){ document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); }); }
+
+  // Substitua pelo endpoint do seu formulário em https://formspree.io (ex: "https://formspree.io/f/xxxxxxxx")
+  var MANTENEDOR_ENDPOINT = 'FORMSPREE_ENDPOINT_AQUI';
+
+  var toggleBtn = document.getElementById('mantenedor-toggle');
+  var mantForm = document.getElementById('mantenedor-form');
+  if(toggleBtn && mantForm){
+    toggleBtn.addEventListener('click', function(){
+      var isHidden = mantForm.hidden;
+      mantForm.hidden = !isHidden;
+      toggleBtn.setAttribute('aria-expanded', String(isHidden));
+      toggleBtn.textContent = isHidden ? 'Fechar formulário' : 'Quero ser mantenedor';
+    });
+
+    mantForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      var msg = document.getElementById('mantenedor-msg');
+      var submitBtn = mantForm.querySelector('button[type="submit"]');
+      if(MANTENEDOR_ENDPOINT.indexOf('FORMSPREE_ENDPOINT_AQUI') !== -1){
+        msg.textContent = 'Cadastro ainda não disponível por aqui. Fale com a gente direto pelo WhatsApp (11 98999-6516) ou e-mail (projetomarrocos@outlook.com).';
+        msg.className = 'form-msg error';
+        return;
+      }
+      submitBtn.disabled = true;
+      msg.textContent = 'Enviando...';
+      msg.className = 'form-msg';
+      fetch(MANTENEDOR_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: new FormData(mantForm)
+      }).then(function(res){
+        if(res.ok){
+          msg.textContent = 'Recebemos seu cadastro! Em breve entraremos em contato por e-mail ou WhatsApp. Deus abençoe sua parceria com este projeto.';
+          msg.className = 'form-msg success';
+          mantForm.reset();
+        } else {
+          msg.textContent = 'Não conseguimos enviar agora. Fale com a gente direto pelo WhatsApp (11 98999-6516) ou e-mail (projetomarrocos@outlook.com).';
+          msg.className = 'form-msg error';
+        }
+      }).catch(function(){
+        msg.textContent = 'Não conseguimos enviar agora. Fale com a gente direto pelo WhatsApp (11 98999-6516) ou e-mail (projetomarrocos@outlook.com).';
+        msg.className = 'form-msg error';
+      }).finally(function(){
+        submitBtn.disabled = false;
+      });
+    });
+  }
 
   document.querySelectorAll('.copy-btn').forEach(function(btn){
     btn.addEventListener('click', function(){
