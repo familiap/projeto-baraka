@@ -244,8 +244,9 @@ footer{ padding-block:3.5rem; }
 .contact-item{ display:flex; justify-content:space-between; align-items:center; gap:1rem; background:color-mix(in srgb, var(--band-fg) 7%, transparent); border:1px solid color-mix(in srgb, var(--band-fg) 16%, transparent); border-radius:14px; padding:1rem 1.2rem; }
 .contact-item .lbl{ font-size:.75rem; text-transform:uppercase; letter-spacing:.08em; color:var(--band-muted); display:block; margin-bottom:.2rem; }
 .contact-item .v{ font-weight:600; word-break:break-word; }
-.copy-btn{ flex:0 0 auto; background:transparent; border:1px solid color-mix(in srgb, var(--band-fg) 35%, transparent); color:var(--band-fg); border-radius:8px; padding:.4rem .7rem; font-size:.78rem; cursor:pointer; font-family:var(--font-body); }
-.copy-btn:hover{ border-color:var(--band-accent); color:var(--band-accent); }
+.contact-actions{ display:flex; gap:.5rem; flex:0 0 auto; }
+.contact-btn{ display:inline-flex; align-items:center; flex:0 0 auto; background:transparent; border:1px solid color-mix(in srgb, var(--band-fg) 35%, transparent); color:var(--band-fg); border-radius:8px; padding:.4rem .7rem; font-size:.78rem; cursor:pointer; font-family:var(--font-body); text-decoration:none; }
+.contact-btn:hover{ border-color:var(--band-accent); color:var(--band-accent); }
 .foot-note{ margin-top:2.6rem; max-width:62ch; color:var(--band-muted); font-size:.95rem; }
 .foot-bottom{ margin-top:2.6rem; padding-top:1.6rem; border-top:1px solid color-mix(in srgb, var(--band-fg) 14%, transparent); display:flex; justify-content:space-between; flex-wrap:wrap; gap:.6rem; font-size:.82rem; color:var(--band-muted); }
 
@@ -578,19 +579,18 @@ footer{ padding-block:3.5rem; }
     <div class="contact-grid">
       <div class="contact-item">
         <div><span class="lbl">WhatsApp</span><span class="v">11 98999-6516</span></div>
-        <button class="copy-btn" data-copy="11989996516">Copiar</button>
+        <div class="contact-actions">
+          <a class="contact-btn" href="https://wa.me/5511989996516" target="_blank" rel="noopener">Abrir conversa</a>
+          <button class="contact-btn copy-btn" data-copy="11989996516">Copiar</button>
+        </div>
       </div>
       <div class="contact-item">
         <div><span class="lbl">E-mail</span><span class="v">projetomarrocos@outlook.com</span></div>
-        <button class="copy-btn" data-copy="projetomarrocos@outlook.com">Copiar</button>
+        <button class="contact-btn copy-btn" data-copy="projetomarrocos@outlook.com">Copiar</button>
       </div>
       <div class="contact-item">
         <div><span class="lbl">Chave Pix (e-mail)</span><span class="v">projetomarrocos@outlook.com</span></div>
-        <button class="copy-btn" data-copy="projetomarrocos@outlook.com">Copiar</button>
-      </div>
-      <div class="contact-item">
-        <div><span class="lbl">Instagram</span><span class="v">@igorpachecopessoal · @shalom.psi</span></div>
-        <button class="copy-btn" data-copy="@igorpachecopessoal e @shalom.psi">Copiar</button>
+        <button class="contact-btn copy-btn" data-copy="projetomarrocos@outlook.com">Copiar</button>
       </div>
     </div>
     <div class="foot-bottom">
