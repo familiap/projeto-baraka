@@ -610,8 +610,7 @@ footer{ padding-block:3.5rem; }
     }
   }catch(e){ document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); }); }
 
-  // Substitua pelo endpoint do seu formulário em https://formspree.io (ex: "https://formspree.io/f/xxxxxxxx")
-  var MANTENEDOR_ENDPOINT = 'FORMSPREE_ENDPOINT_AQUI';
+  var MANTENEDOR_WHATSAPP = '5511989996516';
 
   var toggleBtn = document.getElementById('mantenedor-toggle');
   var mantForm = document.getElementById('mantenedor-form');
@@ -626,34 +625,28 @@ footer{ padding-block:3.5rem; }
     mantForm.addEventListener('submit', function(e){
       e.preventDefault();
       var msg = document.getElementById('mantenedor-msg');
-      var submitBtn = mantForm.querySelector('button[type="submit"]');
-      if(MANTENEDOR_ENDPOINT.indexOf('FORMSPREE_ENDPOINT_AQUI') !== -1){
-        msg.textContent = 'Cadastro ainda não disponível por aqui. Fale com a gente direto pelo WhatsApp (11 98999-6516) ou e-mail (projetomarrocos@outlook.com).';
-        msg.className = 'form-msg error';
-        return;
-      }
-      submitBtn.disabled = true;
-      msg.textContent = 'Enviando...';
-      msg.className = 'form-msg';
-      fetch(MANTENEDOR_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Accept': 'application/json' },
-        body: new FormData(mantForm)
-      }).then(function(res){
-        if(res.ok){
-          msg.textContent = 'Recebemos seu cadastro! Em breve entraremos em contato por e-mail ou WhatsApp. Deus abençoe sua parceria com este projeto.';
-          msg.className = 'form-msg success';
-          mantForm.reset();
-        } else {
-          msg.textContent = 'Não conseguimos enviar agora. Fale com a gente direto pelo WhatsApp (11 98999-6516) ou e-mail (projetomarrocos@outlook.com).';
-          msg.className = 'form-msg error';
-        }
-      }).catch(function(){
-        msg.textContent = 'Não conseguimos enviar agora. Fale com a gente direto pelo WhatsApp (11 98999-6516) ou e-mail (projetomarrocos@outlook.com).';
-        msg.className = 'form-msg error';
-      }).finally(function(){
-        submitBtn.disabled = false;
-      });
+      var data = new FormData(mantForm);
+      var nome = (data.get('nome') || '').trim();
+      var email = (data.get('email') || '').trim();
+      var whatsapp = (data.get('whatsapp') || '').trim();
+      var contribuicao = (data.get('contribuicao') || '').trim();
+      var mensagem = (data.get('mensagem') || '').trim();
+
+      var lines = [
+        'Olá! Quero ser mantenedor do Projeto Baraka.',
+        'Nome: ' + nome,
+        'E-mail: ' + email,
+        'WhatsApp: ' + whatsapp,
+        'Contribuição pretendida: ' + contribuicao
+      ];
+      if(mensagem){ lines.push('Mensagem: ' + mensagem); }
+
+      var waUrl = 'https://wa.me/' + MANTENEDOR_WHATSAPP + '?text=' + encodeURIComponent(lines.join('\n'));
+      window.open(waUrl, '_blank', 'noopener');
+
+      msg.textContent = 'Abrimos o WhatsApp com seus dados preenchidos — confira e toque em enviar para concluir o cadastro.';
+      msg.className = 'form-msg success';
+      mantForm.reset();
     });
   }
 
